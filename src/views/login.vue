@@ -1,19 +1,24 @@
 <template>
 
 <div id="login" :style="bgStyle">
-
   <div id="login-from">
     <el-avatar style="margin-left: 110px" :size="80" :src="logoUrl" ></el-avatar>
 
     <div class="title">视网膜血管分割平台</div>
 
-    <login-from ref="loginfrom" @userlogin="login"/>
+    <login-from ref="loginfrom" @userlogin="loginClick"/>
 
     <div class="create-account">
       <br/>
       没有账号？ <el-link @click="toCreateAccount" type="primary">点击注册</el-link>
     </div>
   </div>
+
+
+  <check-code-dialog ref="checkCodeDialog"
+                     @refresh="refreshCheckCode"
+                     @confirmvalidcode="login"/>
+
 </div>
 
 </template>
@@ -23,20 +28,27 @@ import LoginFrom from "@/components/loginfrom/LoginFrom";
 
 import {LOGINBACKGROUND} from "@/util/ImageURL";
 
-import {loginNetwork} from "@/network/user";
+import {getCheckCodeNetwork, loginNetwork} from "@/network/user";
+import CheckCodeDialog from "@/components/checkcodedialog/CheckCodeDialog";
+import {addCookie} from "@/util/cookie";
+import {USER_TOKEN} from "@/config";
 
 export default {
   name: "login",
   components:{
+    CheckCodeDialog,
     LoginFrom
   },
   data() {
     return {
+      form: {
+        username: '',
+        password: '',
+        checkCode: ''
+      },
       bgStyle: LOGINBACKGROUND,
       logoUrl: require("@/assets/img/logo.png"),
       createAccountPath: '/createaccount',
-      username: '',
-      isStartFaceLogin: false
     }
   },
   methods: {
@@ -44,12 +56,43 @@ export default {
     toCreateAccount() {
       this.$router.push(this.createAccountPath)
     },
+    loginClick(form){
+      this.form = form
+      this.getCheckCode(form.username)
+    },
+    /**
+     * 获取验证码
+     */
+    getCheckCode(username){
+      const loading = this.$loading({
+        lock: true,
+        text: '正在获取验证码',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      const dialog = this.$refs.checkCodeDialog
+      getCheckCodeNetwork(username).then(data => {
+        if(data.size !== 0){
+          dialog.checkCodeImg = window.URL.createObjectURL(data)
+          dialog.checkCodeVisible = true
+        }else {
+          this.$message.error('不存在该用户')
+        }
+      }).finally(()=>{
+        loading.close()
+      })
+    },
+    /**
+     * 刷新验证码
+     */
+    refreshCheckCode(){
+      this.getCheckCode(this.form.username)
+    },
     /**
      * 登录方法
      */
-    login(form){
-      let userName = form.username
-      let userPwd = form.password
+    login(checkCode){
+      this.form.checkCode = checkCode
 
       const loading = this.$loading({
         lock: true,
@@ -58,17 +101,16 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)'
       })
 
-      loginNetwork(userName, userPwd).then(data =>{
-        if(data.code === 200){
-          let userIfo = data.result
-
+      loginNetwork(this.form).then(data =>{
+        if(data.success === true){
           this.$message.success('登录成功，即将进入系统')
-
+          addCookie(USER_TOKEN, data.data.token, 7*24)
+          this.$store.commit('setLoginUser', data.data.loginUser)
+          this.$router.push('/home')
         }else{
           //登录失败
-         this.$message.error('登录失败, '+data.msg)
+         this.$message.error('登录失败, '+data.errorMsg)
         }
-
       }).catch(e => {
         this.$message.error('出错拉,检查网络试试或联系管理员')
       }).finally(()=>{

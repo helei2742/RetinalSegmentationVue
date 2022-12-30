@@ -64,3 +64,56 @@ export function uploadSrcImgNetwork(idNumber, file, uploadProgressEvent) {
         }
     })
 }
+
+
+/**
+ * 获取上传的图片路径
+ * @returns {AxiosPromise}
+ */
+export function getSrcImgURLNetwork(idNumber) {
+    return request({
+        url: '/init/getSrcImgURL',
+        method: 'post',
+        headers: {
+            IdNumber: idNumber
+        }
+    })
+}
+
+/**
+ * 临时用户发起分割处理图像请求
+ * @param idNumber
+ * @param srcImgPath
+ * @returns {AxiosPromise}
+ */
+export function tempSegmentationNetwork(idNumber, srcImgPath) {
+    return request({
+        url: '/init/tempSegmentation',
+        method: 'post',
+        params:{
+          srcImgPath
+        },
+        headers: {
+            IdNumber: idNumber
+        }
+    })
+}
+
+/**
+ * 查看是否具有分割结果
+ * @param idNumber
+ * @param srcImgPath
+ * @returns {AxiosPromise}
+ */
+export function isHaveSegmentationNetwork(idNumber, srcImgPath) {
+    return request({
+        url: '/init/isHaveSegmentation',
+        method: 'post',
+        params:{
+            srcImgPath
+        },
+        headers: {
+            IdNumber: idNumber
+        }
+    })
+}

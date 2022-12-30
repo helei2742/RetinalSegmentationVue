@@ -93,7 +93,6 @@ export default {
         this.$message.error('请先选择文件')
         return
       }
-      console.log(this.fileForm)
       this.$emit('uploadFile', this.fileForm)
     },
     handleRemove(file, fileList) {

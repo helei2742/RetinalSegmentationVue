@@ -88,7 +88,7 @@ export default {
           this.$message.error(res.errorMsg)
         }
       }).finally(()=>{
-        loading = false
+        this.loading = false
       })
     },
     uploadImage() {
@@ -99,6 +99,7 @@ export default {
       uploadSrcImgNetwork(this.$store.getters.getIdNumber, this.fileForm, uploadProgressEvent).then(res => {
         if(res.success === true) {
           this.$message.success('上传成功')
+          this.fileForm = null
         }else {
           this.$message.error(res.errorMsg)
         }
