@@ -4,13 +4,17 @@
       视网膜血管分割
     </el-menu-item>
 
-    <el-menu-item index="2" @click="toTempPage">
+    <el-menu-item v-if="!isLogin" index="2" @click="toTempPage">
       匿名使用
     </el-menu-item>
 
     <el-menu-item index="3" @click="toUserUploadPage">
-      注册用户使用
+      图片分割
     </el-menu-item>
+
+<!--    <el-menu-item index="4" @click="toUserPage">-->
+<!--      个人中心-->
+<!--    </el-menu-item>-->
 
     <el-submenu v-if="isLogin"
                 id="user-manage"
@@ -21,11 +25,8 @@
             {{$store.getters.getLoginUser.username}}
         </span>
       </template>
-      <el-menu-item>
+      <el-menu-item  @click="toUserPage">
         <span>个人中心</span>
-      </el-menu-item>
-      <el-menu-item>
-        <span style="color: #dca551">密码修改</span>
       </el-menu-item>
       <el-menu-item @click="logout">
         <span style="color: #e47470">退出登录</span>
@@ -42,9 +43,11 @@
 
 import {delCookie} from "@/util/cookie";
 import {USER_TOKEN} from "@/config";
+import PasswordAlterFrom from "@/views/user/child/passwordalter/PasswordAlterFrom";
 
 export default {
   name: "NavBar",
+  components: {PasswordAlterFrom},
   computed: {
     isLogin() {
       return this.$store.getters.getLoginUser !== null
@@ -76,6 +79,9 @@ export default {
     },
     toUserUploadPage(){
       this.$router.push('/userUpload')
+    },
+    toUserPage(){
+      this.$router.push('/user')
     },
     logout(){
       this.$confirm('是否退出登陆？', {

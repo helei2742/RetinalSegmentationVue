@@ -60,22 +60,26 @@ export default {
   components: {
     VueCropper
   },
-  props:['Name'],
+  props:{
+    filename: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
-      name:this.Name,
       previews: {},
       option:{
         img: '',             //裁剪图片的地址
         outputSize: 1,       //裁剪生成图片的质量(可选0.1 - 1)
-        outputType: 'jpeg',  //裁剪生成图片的格式（jpeg || png || webp）
+        outputType: 'png',  //裁剪生成图片的格式（jpeg || png || webp）
         info: true,          //图片大小信息
         canScale: true,      //图片是否允许滚轮缩放
         autoCrop: true,      //是否默认生成截图框
-        autoCropWidth: 230,  //默认生成截图框宽度
-        autoCropHeight: 150, //默认生成截图框高度
+        autoCropWidth: 499.5,  //默认生成截图框宽度
+        autoCropHeight: 480, //默认生成截图框高度
         fixed: true,         //是否开启截图框宽高固定比例
-        fixedNumber: [1.53, 1], //截图框的宽高比例
+        fixedNumber: [1.0406, 1], //截图框的宽高比例
         full: false,         //false按原比例裁切图片，不失真
         fixedBox: true,      //固定截图框大小，不允许改变
         canMove: false,      //上传图片是否可以移动
@@ -85,8 +89,8 @@ export default {
         height: true,        //是否按照设备的dpr 输出等比例图片
         infoTrue: false,     //true为展示真实输出图片宽高，false展示看到的截图框宽高
         maxImgSize: 3000,    //限制图片最大宽度和高度
-        enlarge: 1,          //图片根据截图框输出比例倍数
-        mode: '230px 150px'  //图片默认渲染方式
+        enlarge: 2,          //图片根据截图框输出比例倍数
+        mode: '799px 768px'  //图片默认渲染方式
       }
     };
   },
@@ -114,7 +118,6 @@ export default {
     },
     //选择图片
     selectImg (e) {
-
       let file = e.target.files[0]
       if (!/\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {
         this.$message({
@@ -145,11 +148,12 @@ export default {
         //获取截图的blob数据
         this.$refs.cropper.getCropBlob((data) => {
           let formData = new FormData();
-          formData.append('file',data,"DX.jpg")
+          console.log(_this.filename)
+          formData.append('file',data,_this.filename)
           this.$emit('cropperfile', formData)
         })
       }
-    },
+    }
   },
 }
 </script>
@@ -166,7 +170,7 @@ export default {
 }
 .cropper-content > .cropper-box > .cropper{
   width: auto;
-  height: 300px;
+  height: 960px;
 }
 .cropper-content > .show-preview{
   flex: 1;

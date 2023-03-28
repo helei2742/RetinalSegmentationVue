@@ -9,7 +9,10 @@
           <router-view/>
         </div>
       </el-main>
-      <el-footer>Footer</el-footer>
+
+      <el-footer>
+        <footer-card/>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -20,19 +23,16 @@ import NavBar from "@/components/navbar/NavBar";
 import {getCookie} from "@/util/cookie";
 import {validLoginUser} from "@/network/user";
 import {USER_TOKEN} from "@/config";
+import FooterCard from "@/components/footer/FooterCard";
 export default {
   name: "app",
-  components: {NavBar},
+  components: {FooterCard, NavBar},
   mounted() {
-    let userToken = getCookie(USER_TOKEN)
-    if(userToken !== null && userToken !== undefined && userToken.length > 0){
-      validLoginUser(userToken).then(res => {
+      validLoginUser().then(res => {
         if(res.success === true) {
           this.$store.commit('setLoginUser', res.data)
         }
       })
-    }
-
   }
 }
 </script>
@@ -55,4 +55,13 @@ body{
 #app > section > main{
   padding: 0;
 }
+
+.el-table .warning-row {
+  background: oldlace;
+}
+
+.el-table .success-row {
+  background: #f2f9ec;
+}
+
 </style>

@@ -5,8 +5,8 @@
            element-loading-spinner="el-icon-loading"
            element-loading-background="rgba(0, 0, 0, 0.8)"
            :body-style="{ padding: '0px' }">
-    <img v-show="!isShowRes" :src="srcImgUrl" class="image">
-    <img v-show="isShowRes" :src="resImgUrl" class="image">
+    <img v-show="!isShowRes" :src="srcImgUrl" class="image"/>
+    <img v-show="isShowRes" :src="resImgUrl" class="image"/>
 
     <div class="bottom">
         <el-tooltip effect="dark" :content="isShowRes?'显示原图':'切换到分割结果'" placement="bottom-start">

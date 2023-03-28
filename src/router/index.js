@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 const HomePage = () => import('@/views/home/HomePage')
 const TempPate = () => import('@/views/temp/TempPage')
 const UserUploadPage = () => import('@/views/user/UserUploadPage')
+const UserPage = () => import('@/views/user/UserPage')
 
 const CreateAccount = () => import('@/views/CreateAccount')
 const Login = () => import('@/views/login')
@@ -40,6 +41,11 @@ const routes = [
     path: '/userUpload',
     name: 'userUpload',
     component: UserUploadPage
+  },
+  {
+    path: '/user',
+    name: 'user',
+    component: UserPage
   }
 ]
 

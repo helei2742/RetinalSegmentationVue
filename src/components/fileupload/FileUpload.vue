@@ -1,5 +1,5 @@
 <template>
-<div class="file-upload">
+<div v-show="visible" class="file-upload">
   <el-upload
       class="upload-demo"
       drag
@@ -27,8 +27,8 @@
         开始上传
       </el-button>
     </div>
-
   </el-upload>
+
   <!-- 上传进度条 -->
   <el-progress
       v-if="percentVisible"
@@ -43,10 +43,9 @@
       :before-close="handleClose">
       <span>请对图片进行剪裁</span>
       <img-cropper ref="imgcropper"
+                   :filename="fileName"
                    @cropperfile="cropperFile"/>
   </el-dialog>
-
-
 </div>
 </template>
 
@@ -63,6 +62,10 @@ export default {
     progressPercent: {
       type: Number,
       default: 0
+    },
+    visible:{
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -130,7 +133,7 @@ export default {
 
 <style scoped>
 .file-upload {
-  width: 370px;
+  width: 960px;
 }
 .file-upload-message {
   height: 40px;
