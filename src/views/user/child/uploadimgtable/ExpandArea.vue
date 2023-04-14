@@ -46,13 +46,13 @@
         开始分割
       </el-button>
       <el-button type="primary" round size="mini"
-                 @click="download(record.srcImgUrl)"
+                 @click="download(record.srcLocation)"
                  icon="el-icon-download">
         下载原图
       </el-button>
       <el-button  round size="mini"
                  :disabled="record.state!==2"
-                 @click="download(record.resImgUrl)"
+                 @click="download(record.resLocation)"
                  icon="el-icon-download">
         下载结果
       </el-button>
@@ -62,11 +62,19 @@
                  icon="el-icon-refresh">
         病灶检测
       </el-button>
+      <el-button type="danger" round size="mini"
+                 @click="deleteRecord"
+                 icon="el-icon-refresh">
+        删除记录
+      </el-button>
     </el-row>
   </div>
 </template>
 
 <script>
+import {delCookie} from "@/util/cookie";
+import {USER_TOKEN} from "@/config";
+
 export default {
   name: "ExpandArea",
   props:{
@@ -97,7 +105,8 @@ export default {
       })
     },
     download(downloadUrl) {
-      let splits = downloadUrl.split('/')
+
+      let splits = downloadUrl.split('\\')
       let fileName = splits[splits.length-1]
       this.getUrlBase64(downloadUrl).then(base64 => {
         let link = document.createElement('a')
@@ -107,11 +116,21 @@ export default {
       })
     },
     imgDetection(){
-      let str = this.record.resLocation.split('/images/')[1]
-      this.$emit('imgDetection', '/images/' + str)
+      let str = this.record.resLocation.split('\\images\\')[1]
+      this.$emit('imgDetection', '\\images\\' + str)
     },
     startSegmentation(){
       this.$emit('startSegmentation', this.record.id)
+    },
+    deleteRecord() {
+      this.$confirm('是否删除该记录？', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '是',
+        cancelButtonText: '否', //相当于 取消按钮
+        type: 'warning'
+      }).then(() => {
+        this.$emit("deleteRecord", this.record.id)
+      })
     }
   }
 }

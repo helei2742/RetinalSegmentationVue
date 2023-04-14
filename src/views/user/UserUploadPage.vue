@@ -38,7 +38,8 @@
     </div>
     <expand-area :record="currentRecord"
                  @imgDetection="imgDetection"
-                 @startSegmentation="startSegmentation"/>
+                 @startSegmentation="startSegmentation"
+                 @deleteRecord="deleteRecord"/>
   </div>
 
   <el-dialog
@@ -75,6 +76,7 @@
 import FileUpload from "@/components/fileupload/FileUpload";
 import UploadImgTable from "@/views/user/child/uploadimgtable/UploadImgTable";
 import {
+  deleteRecordNetwork,
   getUserImageListNetwork,
   imageDetectionNetwork,
   imageSegmentationNetwork,
@@ -156,6 +158,25 @@ export default {
           link.click();
         }else {
           this.$message.error('发生错误')
+        }
+      }).finally(()=>{
+        loading.close()
+      })
+    },
+
+    deleteRecord(recordId) {
+      const loading = this.$loading({
+        lock: true,
+        text: '正在删除记录',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+
+      deleteRecordNetwork(recordId).then(data =>{
+        if(data.success === true) {
+          this.$message.success("记录删除成功")
+        }else {
+          this.$message.error("删除失败" + data.errorMsg)
         }
       }).finally(()=>{
         loading.close()

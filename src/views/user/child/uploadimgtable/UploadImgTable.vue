@@ -63,8 +63,8 @@ export default {
     },
     getFileName() {
       return location => {
-        let arr = location.split('/')
-        return  arr[arr.length-1].substr(9)
+        let arr = location.split('\\')
+        return  arr[arr.length-1].substr(9 + 13)
       }
     }
   },

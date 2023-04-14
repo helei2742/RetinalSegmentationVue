@@ -197,3 +197,21 @@ export function imageDetectionNetwork(srcPath) {
         }
     })
 }
+
+/**
+ * 删除用户记录网络请求
+ * @param recordId
+ * @returns {AxiosPromise}
+ */
+export function deleteRecordNetwork(recordId) {
+    return request({
+        url: '/userUploadRecord/deleteUploadRecord',
+        method: 'post',
+        data: {
+            recordId
+        },
+        headers: {
+            userToken: getUserToken()
+        }
+    })
+}
