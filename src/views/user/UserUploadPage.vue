@@ -38,6 +38,7 @@
     </div>
     <expand-area :record="currentRecord"
                  @imgDetection="imgDetection"
+                 @imgCoincide="imgCoincide"
                  @startSegmentation="startSegmentation"
                  @deleteRecord="deleteRecord"/>
   </div>
@@ -79,6 +80,7 @@ import {
   deleteRecordNetwork,
   getUserImageListNetwork,
   imageDetectionNetwork,
+  imageCoincideNetwork,
   imageSegmentationNetwork,
   userUploadSrcImageNetwork
 } from "@/network/user";
@@ -163,7 +165,31 @@ export default {
         loading.close()
       })
     },
+    imgCoincide(recordId){
+      const loading = this.$loading({
+        lock: true,
+        text: '处理中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
 
+      imageCoincideNetwork(recordId).then(data=>{
+        if(data.size !== 0){
+          let BLOB = new Blob([data]);
+          let url = window.URL.createObjectURL(BLOB);
+          let link = document.createElement('a');
+          link.style.display = 'none';
+          link.href = url;
+          link.setAttribute('download', 'CoincideResult.png');
+          document.body.appendChild(link);
+          link.click();
+        }else {
+          this.$message.error('发生错误')
+        }
+      }).finally(()=>{
+        loading.close()
+      })
+    },
     deleteRecord(recordId) {
       const loading = this.$loading({
         lock: true,

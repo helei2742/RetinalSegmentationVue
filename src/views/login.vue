@@ -104,6 +104,7 @@ export default {
       loginNetwork(this.form).then(data =>{
         if(data.success === true){
           this.$message.success('登录成功，即将进入系统')
+          console.log(data)
           addCookie(USER_TOKEN, data.data.token, 7*24)
           this.$store.commit('setLoginUser', data.data.loginUser)
           this.$router.push('/home')

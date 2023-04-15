@@ -9,9 +9,11 @@
     </el-menu-item>
 
     <el-menu-item index="3" @click="toUserUploadPage">
-      图片分割
+      血管分割
     </el-menu-item>
-
+    <el-menu-item index="4" @click="toPatientPage">
+      病患信息
+    </el-menu-item>
 <!--    <el-menu-item index="4" @click="toUserPage">-->
 <!--      个人中心-->
 <!--    </el-menu-item>-->
@@ -79,6 +81,9 @@ export default {
     },
     toUserUploadPage(){
       this.$router.push('/userUpload')
+    },
+    toPatientPage() {
+      this.$router.push('/patientPage')
     },
     toUserPage(){
       this.$router.push('/user')

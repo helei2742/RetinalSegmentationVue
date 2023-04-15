@@ -199,6 +199,25 @@ export function imageDetectionNetwork(srcPath) {
 }
 
 /**
+ * 将分割出的血管勾勒到原图上
+ * @param recordId
+ * @returns {AxiosPromise}
+ */
+export function imageCoincideNetwork(recordId) {
+    return request({
+        url: '/user/imgCoincide',
+        method: 'post',
+        params: {
+            recordId
+        },
+        responseType:'blob',
+        headers:{
+            userToken: getUserToken()
+        }
+    })
+}
+
+/**
  * 删除用户记录网络请求
  * @param recordId
  * @returns {AxiosPromise}
@@ -215,3 +234,4 @@ export function deleteRecordNetwork(recordId) {
         }
     })
 }
+

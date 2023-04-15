@@ -34,7 +34,37 @@
     </div>
 
 
-    <el-divider content-position="center">数据统计</el-divider>
+    <el-divider content-position="center">病例信息</el-divider>
+
+    <div style="text-align: center">
+      <el-button v-if="record.patientId === null" @click="bindDialogVisible=true" type="text">
+        点击绑定病人信息
+      </el-button>
+      <el-button v-else type="text" @click="showPatientInfo">
+        点击查看病人信息
+      </el-button>
+      <el-dialog
+          title="绑定病例信息"
+          style="text-align: center"
+          :visible.sync="bindDialogVisible"
+          width="30%">
+        <el-form :model="bindForm" ref="bindForm" label-width="100px" class="demo-ruleForm">
+          <el-form-item
+              label="绑定码"
+              prop="bindCode"
+              :rules="[
+                { required: true, message: '请输入绑定码', trigger: 'blur' },
+                { min: 7, max: 7, message: '长度为6个字符', trigger: 'blur' }
+              ]">
+            <el-input v-model.number="bindForm.bindCode" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('bindForm')">提交</el-button>
+            <el-button @click="bindDialogVisible=false">关闭</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+    </div>
 
 
     <el-divider content-position="center">更多操作</el-divider>
@@ -62,6 +92,12 @@
                  icon="el-icon-refresh">
         病灶检测
       </el-button>
+      <el-button type="warning" round size="mini"
+                 @click="imgCoincide"
+                 :disabled="record.state!==2"
+                 icon="el-icon-refresh">
+        血管勾勒
+      </el-button>
       <el-button type="danger" round size="mini"
                  @click="deleteRecord"
                  icon="el-icon-refresh">
@@ -74,6 +110,7 @@
 <script>
 import {delCookie} from "@/util/cookie";
 import {USER_TOKEN} from "@/config";
+import {bindPatientNetwork} from "@/network/patient";
 
 export default {
   name: "ExpandArea",
@@ -85,8 +122,36 @@ export default {
       }
     }
   },
-
+  data() {
+    return {
+      bindDialogVisible: false,
+      bindForm: {
+        bindCode: '',
+        recordId: ''
+      }
+    }
+  },
   methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.bindForm.recordId = this.record.id
+          bindPatientNetwork(this.bindForm).then(data=>{
+            if(data.success===true) {
+              this.$message.success('绑定成功')
+              this.bindDialogVisible = false
+            }else {
+              this.$message.error('绑定失败'+data.errorMsg)
+            }
+          })
+        } else {
+          return false;
+        }
+      })
+    },
+    showPatientInfo(){
+
+    },
     getUrlBase64(url) {
       return new Promise(resolve => {
         let canvas = document.createElement('canvas')
@@ -118,6 +183,9 @@ export default {
     imgDetection(){
       let str = this.record.resLocation.split('\\images\\')[1]
       this.$emit('imgDetection', '\\images\\' + str)
+    },
+    imgCoincide(){
+      this.$emit('imgCoincide', this.record.id)
     },
     startSegmentation(){
       this.$emit('startSegmentation', this.record.id)
