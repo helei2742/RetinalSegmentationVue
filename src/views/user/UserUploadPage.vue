@@ -60,9 +60,13 @@
       title="提示"
       :visible.sync="moreDataVisible"
       width="90%">
+
+
+
     <more-data-page
         :state="this.currentState"
         @getMoreData="getMoreData"
+        @showRecordDetail="showRecordDetailV2"
         :more-data="moreData"/>
     <span slot="footer" class="dialog-footer">
     <el-button @click="moreDataVisible = false">取 消</el-button>
@@ -126,7 +130,7 @@ export default {
       this.currentState = state
 
       let uid = this.$store.getters.getLoginUser.id
-      getUserImageListNetwork(uid, state,page, 10).then(data=>{
+      getUserImageListNetwork(uid, state, page, 10).then(data=>{
         // console.log(data)
         if(data.success === true) {
           this.moreData = data.data
@@ -139,7 +143,12 @@ export default {
     showRecordDetail(record) {
       this.currentRecord = record
     },
-
+    showRecordDetailV2(record){
+      this.moreDataVisible = false
+      record.srcLocation = IMGCDNURL + record.srcLocation
+      record.resLocation = IMGCDNURL + record.resLocation
+      this.currentRecord = record
+    },
     imgDetection(srcPath) {
       const loading = this.$loading({
         lock: true,
@@ -190,6 +199,7 @@ export default {
         loading.close()
       })
     },
+
     deleteRecord(recordId) {
       const loading = this.$loading({
         lock: true,

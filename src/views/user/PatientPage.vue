@@ -36,6 +36,7 @@
           @createPatientInfo="createPatientInfo"
           @closeCreate="inputDialogVisible=false"/>
   </el-dialog>
+
   <el-dialog
       title="请先绑定记录"
       style="text-align: center"
@@ -44,6 +45,12 @@
     该病人尚未绑定分割记录，请凭借<el-tag>{{bindCode}}</el-tag>到血管分割处绑定记录
   </el-dialog>
 
+  <el-dialog
+      title="分割结果"
+      :visible.sync="recordDialogVisible"
+      width="85%">
+    <expand-area :record="record"/>
+  </el-dialog>
 </div>
 </template>
 
@@ -52,9 +59,12 @@ import PatientInfoInput from "@/views/user/child/patientpage/PatientInfoInput";
 import {createPatientInfoNetwork, getBindCodeNetwork, pageQueryPatientInfoNetwork} from "@/network/patient";
 import PatientList from "@/views/user/child/patientpage/PatientList";
 import PatientQueryBar from "@/views/user/child/patientpage/PatientQueryBar";
+import ExpandArea from "@/views/user/child/uploadimgtable/ExpandArea";
+import {queryUploadRecordByIdNetwork} from "@/network/user";
+import {IMGCDNURL} from "@/config";
 export default {
   name: "PatientPage",
-  components: {PatientQueryBar, PatientList, PatientInfoInput},
+  components: {ExpandArea, PatientQueryBar, PatientList, PatientInfoInput},
   data() {
     return {
       loading: false,
@@ -63,6 +73,10 @@ export default {
 
       bindCodeDialogVisible: false,
       bindCode: '',
+
+      recordDialogVisible: false,
+      record: null,
+
 
       queryForm: {
         doctorId: '',
@@ -102,10 +116,10 @@ export default {
       if(query.idCard !== '') q.idCard = query.idCard
       if(query.diagnoseType !== -1) q.diagnoseType = query.diagnoseType
       if(query.gender !== -1) q.gender = query.gender
-      console.log(q)
+
       this.loading = true
       pageQueryPatientInfoNetwork(q).then(data=>{
-        console.log(data)
+
         if(data.success === true) {
           this.patientList = data.data.list
           this.queryForm.total = data.data.total
@@ -130,7 +144,18 @@ export default {
     },
 
     showRecord(recordId){
-      console.log(recordId)
+      queryUploadRecordByIdNetwork(recordId).then(data=>{
+        if(data.success === true) {
+          this.record = data.data
+          this.record.srcLocation = IMGCDNURL + this.record.srcLocation
+          this.record.resLocation = IMGCDNURL + this.record.resLocation
+          this.recordDialogVisible = true
+        }else {
+          this.$message.error("打开失败," + data.errorMsg)
+        }
+      })
+
+      this.recordDialogVisible = true
     },
     patientBindRecord(form){
       getBindCodeNetwork(form.patientId, form.c).then(data=>{

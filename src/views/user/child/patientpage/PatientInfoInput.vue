@@ -6,7 +6,7 @@
      element-loading-background="rgba(0, 0, 0, 0.8)"
 >
 
-  <el-form ref="form" :rules="rules" :model="patientInfo" label-width="80px" size="mini">
+  <el-form ref="form" :rules="rules" :model="patientInfo" label-width="80px" size="small">
     <el-form-item label="患者姓名" prop="name">
       <el-input style="width: 180px" v-model="patientInfo.name" ></el-input>
     </el-form-item>
@@ -26,6 +26,10 @@
 
     <el-form-item label="身份证号" prop="idCard">
       <el-input style="width: 400px" v-model="patientInfo.idCard" ></el-input>
+    </el-form-item>
+
+    <el-form-item label="邮箱" prop="email">
+      <el-input style="width: 400px" v-model="patientInfo.email" ></el-input>
     </el-form-item>
 
     <el-form-item label="诊断部位" prop="diagnosePart">
@@ -75,6 +79,7 @@ export default {
         nativeArea: '',
         birthday: '',
         idCard: '',
+        email: '',
         gender: '',
         diagnosePart: [],
         diagnoseType: -1
@@ -102,16 +107,19 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.loading = true
       this.$refs['form'].validate((valid) => {
         if (valid) {
           this.patientInfo.diagnoseType = this.getDiagnoseType(this.patientInfo.diagnosePart)
+          let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+          if(!reg.test(this.patientInfo.email)) {
+            this.$confirm("若录入邮箱请输入正确格式的邮箱地址")
+            return false
+          }
           this.$emit('createPatientInfo', this.patientInfo)
         } else {
           return false;
         }
       })
-
     }
   }
 }

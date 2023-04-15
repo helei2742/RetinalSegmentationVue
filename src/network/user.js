@@ -235,3 +235,19 @@ export function deleteRecordNetwork(recordId) {
     })
 }
 
+/**
+ * 根据id查找上传的分割记录
+ * @param recordId
+ */
+export  function queryUploadRecordByIdNetwork(recordId) {
+    return request({
+        url: '/userUploadRecord/queryById',
+        method: 'get',
+        params: {
+            recordId
+        },
+        headers: {
+            userToken: getUserToken()
+        }
+    })
+}

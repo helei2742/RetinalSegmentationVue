@@ -5,6 +5,10 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import App from './App.vue'
 
+import Print from 'vue-print-nb'
+// Global instruction
+Vue.use(Print);
+
 //全局引用
 Vue.use(ElementUI)
 

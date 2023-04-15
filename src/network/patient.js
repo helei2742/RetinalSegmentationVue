@@ -89,3 +89,21 @@ export function bindPatientNetwork(bindForm){
         }
     })
 }
+
+/**
+ * 根据id获取病人信息
+ * @param id
+ * @returns {AxiosPromise}
+ */
+export function getPatientInfoByIdNetwork(id) {
+    return request({
+        url: '/patientInfo/getInfoById',
+        data: {
+            id
+        },
+        method: 'post',
+        headers: {
+            userToken: getUserToken()
+        }
+    })
+}

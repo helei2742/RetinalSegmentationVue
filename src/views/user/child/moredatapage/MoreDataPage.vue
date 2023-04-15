@@ -1,9 +1,19 @@
 <template>
 <div class="more-data-page">
+
   <el-table
       :data="moreData.list"
       stripe
+      height="500"
       style="width: 100%">
+    <el-table-column
+        prop="srcLocation"
+        label="图片名"
+        width="170">
+      <template slot-scope="scope">
+        <div>{{getName(scope.row.srcLocation)}}</div>
+      </template>
+    </el-table-column>
     <el-table-column
         prop="createTime"
         label="记录时间"
@@ -31,10 +41,19 @@
         <div>{{getState(scope.row.state)}}</div>
       </template>
     </el-table-column>
+
+    <el-table-column
+        width="100"
+        prop="state">
+      <template slot-scope="scope">
+        <el-button @click="clickShowRecord(scope.row)">查看</el-button>
+      </template>
+    </el-table-column>
   </el-table>
 
   <div>
     <el-pagination
+        style="text-align: center"
         :page-size="moreData.pageSize"
         :pager-count="7"
         layout="prev, pager, next"
@@ -82,7 +101,16 @@ export default {
   methods: {
     handleCurrentChange(cutPage) {
       this.$emit('getMoreData', {'state': this.state, 'page': cutPage})
-    }
+    },
+    clickShowRecord(record){
+      this.$emit('showRecordDetail', record)
+    },
+
+    getName(location) {
+      let arr = location.split('\\')
+      return  arr[arr.length-1].substr(9 + 13)
+
+    },
   }
 }
 </script>
