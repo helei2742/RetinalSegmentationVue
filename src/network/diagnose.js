@@ -21,7 +21,8 @@ let getUserToken = ()=> {
         id: 0,
         doctorId: 0,
         recordId: 0,
-        patientId:0
+        patientId:0,
+        diagnoseText: ''
       }}
  */
 export function saveDiagnoseNetwork(form) {

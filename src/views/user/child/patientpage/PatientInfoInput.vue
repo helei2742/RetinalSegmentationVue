@@ -11,10 +11,14 @@
       <el-input style="width: 180px" v-model="patientInfo.name" ></el-input>
     </el-form-item>
     <el-form-item label="籍贯">
-      <el-select v-model="patientInfo.nativeArea" placeholder="省份">
-        <el-option label="上海" value="上海"></el-option>
-        <el-option label="北京" value="北京"></el-option>
-      </el-select>
+      <el-cascader
+          size="small"
+          class="profile-cascader"
+          :options="options"
+          v-model="selectedOptions"
+          @change="handleChange"
+      />
+
     </el-form-item>
     <el-form-item label="出生日期" prop="birthday">
       <el-col :span="11">
@@ -54,7 +58,8 @@
 </template>
 
 <script>
-import {createPatientInfoNetwork} from "@/network/patient";
+import { regionData, CodeToText, TextToCode } from "element-china-area-data"
+import {ref} from "vue";
 
 export default {
   name: "PatientInfoInput",
@@ -84,6 +89,9 @@ export default {
         diagnosePart: [],
         diagnoseType: -1
       },
+      options: ref(regionData),
+      selectedOptions: ref([]),
+
       rules: {
         name: [
           { required: true, message: '请输入姓名', trigger: 'blur' },
@@ -120,6 +128,18 @@ export default {
           return false;
         }
       })
+    },
+    handleChange() {
+      if (
+          this.selectedOptions[0] != null &&
+          this.selectedOptions[1] != null &&
+          this.selectedOptions[2] != null
+      ) {
+        //这里可以根据你需要的数据格式来设置省市区显示
+        this.patientInfo.nativeArea = CodeToText[this.selectedOptions[0]]
+            + CodeToText[this.selectedOptions[1]]
+            + CodeToText[this.selectedOptions[2]]
+      }
     }
   }
 }

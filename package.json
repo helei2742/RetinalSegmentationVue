@@ -9,7 +9,10 @@
   "dependencies": {
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
+    "element-china-area-data": "^5.0.2",
     "element-ui": "^2.15.6",
+    "qrcode-decoder": "^0.3.3",
+    "qrcode-reader": "^1.0.4",
     "vue": "^2.6.11",
     "vue-cropper": "^0.5.8",
     "vue-print-nb": "^1.7.5",

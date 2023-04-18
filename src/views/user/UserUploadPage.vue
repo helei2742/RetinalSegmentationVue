@@ -36,7 +36,8 @@
       </el-button>
 
     </div>
-    <expand-area :record="currentRecord"
+    <expand-area ref="expandArea"
+                 :record="currentRecord"
                  @imgDetection="imgDetection"
                  @imgCoincide="imgCoincide"
                  @startSegmentation="startSegmentation"
@@ -141,9 +142,11 @@ export default {
       })
     },
     showRecordDetail(record) {
+      this.$refs.expandArea.init()
       this.currentRecord = record
     },
     showRecordDetailV2(record){
+      this.$refs.expandArea.init()
       this.moreDataVisible = false
       record.srcLocation = IMGCDNURL + record.srcLocation
       record.resLocation = IMGCDNURL + record.resLocation

@@ -51,12 +51,27 @@
                            :diagnose-record="diagnoseRecord"
                            @saveDiagnose="saveDiagnose"/>
       </div>
+
+
       <el-dialog
-          title="绑定病例信息"
           style="text-align: center"
           :visible.sync="bindDialogVisible"
           width="30%">
-        <el-form :model="bindForm" ref="bindForm" label-width="100px" class="demo-ruleForm">
+
+        <template slot="title">
+          {{isQRCodeBind?'扫描二维码绑定':'绑定码进行绑定'}}
+          <el-button size="mini"
+                     icon="el-icon-refresh"
+                     circle
+                     @click="isQRCodeBind=!isQRCodeBind"/>
+        </template>
+
+        <resolve-q-r-code v-if="isQRCodeBind" @bindRecord="bindPatient"/>
+
+        <el-form v-else
+                 :model="bindForm"
+                 ref="bindForm"
+                 label-width="100px">
           <el-form-item
               label="绑定码"
               prop="bindCode"
@@ -71,6 +86,7 @@
             <el-button @click="bindDialogVisible=false">关闭</el-button>
           </el-form-item>
         </el-form>
+
       </el-dialog>
     </div>
 
@@ -143,10 +159,12 @@ import {USER_TOKEN} from "@/config";
 import {bindPatientNetwork, getPatientInfoByIdNetwork} from "@/network/patient";
 import PatientInfoCard from "@/views/user/child/patientpage/PatientInfoCard";
 import {queryDiagnoseByRecordIdNetwork, saveDiagnoseNetwork} from "@/network/diagnose";
+import ResolveQRCode from "@/views/user/child/uploadimgtable/ResolveQRCode";
+import TempPage from "@/views/temp/TempPage";
 
 export default {
   name: "ExpandArea",
-  components: {PatientInfoCard},
+  components: {TempPage, ResolveQRCode, PatientInfoCard},
   props:{
     record: {
       type: Object,
@@ -159,6 +177,7 @@ export default {
     return {
       bindDialogVisible: false,
       isShowPatientInfo: false,
+      isQRCodeBind: true,
 
       bindForm: {
         bindCode: '',
@@ -196,20 +215,27 @@ export default {
     }
   },
   methods: {
+    init(){
+      this.bindDialogVisible = false
+      this.isShowPatientInfo = false
+    },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.bindForm.recordId = this.record.id
-          bindPatientNetwork(this.bindForm).then(data=>{
-            if(data.success===true) {
-              this.$message.success('绑定成功')
-              this.bindDialogVisible = false
-            }else {
-              this.$message.error('绑定失败'+data.errorMsg)
-            }
-          })
+          this.bindPatient(this.bindForm.bindCode)
         } else {
           return false;
+        }
+      })
+    },
+    bindPatient(bindCode) {
+      let o = {'bindCode': bindCode, 'recordId': this.record.id}
+      bindPatientNetwork(o).then(data=>{
+        if(data.success===true) {
+          this.$message.success('绑定成功')
+          this.bindDialogVisible = false
+        }else {
+          this.$message.error('绑定失败'+data.errorMsg)
         }
       })
     },
@@ -225,10 +251,19 @@ export default {
       queryDiagnoseByRecordIdNetwork(this.record.id).then(data => {
         if(data.success === true) {
           this.diagnoseRecord = data.data
+          if(this.diagnoseRecord === null) {
+            this.diagnoseRecord = {
+              doctorId: this.$store.getters.getLoginUser.id,
+              recordId: this.record.id,
+              patientId: this.patientInfo.id,
+              diagnoseText: ''
+            }
+          }
         }
       })
     },
     saveDiagnose(form){
+      console.log(form)
       saveDiagnoseNetwork(form).then(data => {
         console.log(data)
         if(data.success === true) {

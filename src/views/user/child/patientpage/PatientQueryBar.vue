@@ -70,11 +70,13 @@ export default {
 <style scoped>
 .patient-query-bar{
   text-align: center;
-  border: 1px solid #313335;
+  border-top: 1px solid #313335;
+  border-right: 1px solid #313335;
+  border-left: 1px solid #313335;
   border-radius: 6px;
 
   padding: 14px 10px 0;
 
-  margin-bottom: 4px;
+  margin-bottom: -6px;
 }
 </style>

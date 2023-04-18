@@ -4,7 +4,12 @@
       :data="infoList"
       height="600"
       stripe
+      @selection-change="handleSelectionChange"
       style="width: 100%">
+    <el-table-column
+        type="selection"
+        width="55">
+    </el-table-column>
     <el-table-column
         fixed
         prop="name"
@@ -50,9 +55,15 @@
     </el-table-column>
 
     <el-table-column
-        label="操作"
         fixed="right"
         width="200">
+      <template  slot="header">
+        <el-button size="mini"
+                   @click="deleteIds"
+                   type="danger">
+          删除选中
+        </el-button>
+      </template>
       <template slot-scope="scope">
         <el-button v-if="scope.row.diagnoseType === 0 || scope.row.diagnoseType === 2"
                    @click="showRecord(scope.row.leftDiagnoseRecordId, scope.row.id, 'l')"
@@ -62,14 +73,42 @@
                    type="text" size="small">查看右眼</el-button>
       </template>
     </el-table-column>
+
+    <el-table-column
+        fixed="right"
+        width="60">
+      <template  slot="header">
+
+      </template>
+      <template slot-scope="scope">
+        <el-tooltip content="打印病人记录" placement="top">
+          <el-button size="mini" icon="el-icon-printer" @click="printPatientInfo(scope.row)"/>
+        </el-tooltip>
+      </template>
+    </el-table-column>
   </el-table>
 
+  <el-dialog
+      title="打印结果"
+      :visible.sync="printDialogVisible"
+      width="360px">
+    <patient-info-print ref="patientInfoPrinter"
+                        :code="QRCode"
+                        :patient-info="curInfo"/>
+    <span slot="footer" class="dialog-footer">
+      <el-button type="success" @click="printStart">打印</el-button>
+      <el-button type="info" @click="printDialogVisible = false">关闭</el-button>
+    </span>
+  </el-dialog>
 </div>
 </template>
 
 <script>
+import PatientInfoPrint from "@/views/user/child/patientpage/PatientInfoPrint";
+import {getPatientQRCodeNetwork} from "@/network/patient";
 export default {
   name: "PatientList",
+  components: {PatientInfoPrint},
   props: {
     infoList: {
       type: Array,
@@ -93,7 +132,14 @@ export default {
       }
     }
   },
-
+  data() {
+    return {
+      selectedIds: [],
+      printDialogVisible: false,
+      curInfo: null,
+      QRCode: ''
+    }
+  },
   computed:{
     getGender(){
       return gender => {
@@ -121,6 +167,44 @@ export default {
       }else {
         this.$emit('showRecord', recordId)
       }
+    },
+    handleSelectionChange(arr) {
+      let ids = []
+
+      for(let i = 0; i < arr.length; i++) {
+        ids[i] = arr[i].id
+      }
+      this.selectedIds = ids
+    },
+    deleteIds() {
+      this.$confirm('是否删除选择病人信息？', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '是',
+        cancelButtonText: '否', //相当于 取消按钮
+        type: 'danger'
+      }).then(() => {
+        this.$emit('deleteInfoByIds', this.selectedIds)
+      })
+    },
+
+    printPatientInfo(info) {
+      let c = info.diagnoseType===0?'l':info.diagnoseType===1?'r':'a'
+      getPatientQRCodeNetwork(info.id, c).then(data => {
+        if(data.size !== 0) {
+          this.curInfo = info
+          this.printDialogVisible = true
+          this.$nextTick(()=>{
+            this.$refs.patientInfoPrinter.qrCode = window.URL.createObjectURL(data)
+          })
+        }else {
+          this.$message.error("获取二维码失败")
+        }
+      })
+    },
+    printStart(){
+      this.$nextTick(()=>{
+        this.$refs.patientInfoPrinter.printClick()
+      })
     }
   }
 }
@@ -128,7 +212,9 @@ export default {
 
 <style scoped>
 .patient-list {
-  border: 1px solid #323233;
+  border-bottom: 1px solid #323233;
+  border-left: 1px solid #323233;
+  border-right: 1px solid #323233;
   padding: 20px;
   border-radius: 7px;
 }

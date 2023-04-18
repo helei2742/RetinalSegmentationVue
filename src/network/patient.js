@@ -107,3 +107,40 @@ export function getPatientInfoByIdNetwork(id) {
         }
     })
 }
+
+/**
+ * 根据id数组删除病人记录
+ * @param ids
+ * @returns {AxiosPromise}
+ */
+export function deletePatientInfoByIdsNetwork(ids) {
+    return request({
+        url: '/patientInfo/deleteByIds',
+        data: {
+            ids
+        },
+        method: 'post',
+        headers: {
+            userToken: getUserToken()
+        }
+    })
+}
+
+/**
+ * 获取病人信息二维码
+ * @param patientId
+ */
+export function getPatientQRCodeNetwork(patientId, type) {
+    return request({
+        url: '/patientInfo/getQRCode',
+        params: {
+            patientId,
+            c: type
+        },
+        responseType:'blob',
+        method: 'post',
+        headers: {
+            userToken: getUserToken()
+        }
+    })
+}

@@ -12,8 +12,8 @@
 
   <patient-list :infoList="patientList"
                 @showRecord="showRecord"
+                @deleteInfoByIds="deleteInfoByIds"
                 @patientBindRecord="patientBindRecord"/>
-
   <div>
     <el-pagination
         style="text-align: center"
@@ -56,7 +56,12 @@
 
 <script>
 import PatientInfoInput from "@/views/user/child/patientpage/PatientInfoInput";
-import {createPatientInfoNetwork, getBindCodeNetwork, pageQueryPatientInfoNetwork} from "@/network/patient";
+import {
+  createPatientInfoNetwork,
+  deletePatientInfoByIdsNetwork,
+  getBindCodeNetwork,
+  pageQueryPatientInfoNetwork
+} from "@/network/patient";
 import PatientList from "@/views/user/child/patientpage/PatientList";
 import PatientQueryBar from "@/views/user/child/patientpage/PatientQueryBar";
 import ExpandArea from "@/views/user/child/uploadimgtable/ExpandArea";
@@ -162,6 +167,17 @@ export default {
         if(data.success === true) {
           this.bindCode = data.data
           this.bindCodeDialogVisible = true
+        }
+      })
+    },
+
+    deleteInfoByIds(ids){
+      deletePatientInfoByIdsNetwork(ids).then(data=>{
+        if(data.success === true) {
+          this.$message.success("删除成功")
+          this.conditionQuery()
+        }else {
+          this.$message.error("删除失败,"+data.errorMsg)
         }
       })
     }

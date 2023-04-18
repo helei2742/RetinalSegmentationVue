@@ -1,6 +1,9 @@
 <template>
-<div class="patient-info-card">
-  <el-descriptions class="margin-top" :title="getTitle" :column="3" size="mini" border>
+<div class="patient-info-card" v-if="info!=null">
+  <el-descriptions class="margin-top"
+                   :title="getTitle"
+                   :column="3" size="mini"
+                   border>
     <template slot="extra">
       <el-button size="mini"
                  @click="saveDiagnoseClick"
@@ -54,9 +57,15 @@
       v-model="diagnoseRecord.diagnoseText">
   </el-input>
 </div>
+  <div v-else>
+    病人信息已被删除
+  </div>
 </template>
 
 <script>
+import {delCookie} from "@/util/cookie";
+import {USER_TOKEN} from "@/config";
+
 export default {
   name: "PatientInfoCard",
   props: {
@@ -96,7 +105,16 @@ export default {
 
   methods:{
     saveDiagnoseClick() {
-      this.$emit('saveDiagnose', this.diagnoseRecord)
+      this.$confirm('是否保存诊断？', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '是',
+        cancelButtonText: '否', //相当于 取消按钮
+        type: 'warning'
+      }).then(() => {
+        this.diagnoseRecord.patientId = this.info.id
+
+        this.$emit('saveDiagnose', this.diagnoseRecord)
+      })
     }
   }
 }
